@@ -1,22 +1,21 @@
 import {
   Box,
-  Button,
   Flex,
   HStack,
   Text,
+  Button,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-const Navbar = () => {
+const NavbarDentro = () => {
   return (
-    <Box bg="blue.500" px={4} py={2}>
+    <Box bg="blue.500" px={4}>
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
         <HStack spacing={8} alignItems={"center"}>
           <Text fontSize="xl" fontWeight="bold" color="white">
             TechWarehouse
           </Text>
-          {/* Agregar los enlaces si el usuario está autenticado */}
           <RouterLink to="/inventory">
             <ChakraLink color="white">Inventario</ChakraLink>
           </RouterLink>
@@ -30,21 +29,9 @@ const Navbar = () => {
             <ChakraLink color="white">Ventas</ChakraLink>
           </RouterLink>
         </HStack>
-        <Flex alignItems={"center"}>
-          <RouterLink to="/login">
-            <Button colorScheme="green" size="sm" mr={4}>
-              Iniciar Sesión
-            </Button>
-          </RouterLink>
-          <RouterLink to="/register">
-            <Button colorScheme="teal" size="sm">
-              Registrarse
-            </Button>
-          </RouterLink>
-        </Flex>
       </Flex>
     </Box>
   );
 };
 
-export default Navbar;
+export default NavbarDentro;
