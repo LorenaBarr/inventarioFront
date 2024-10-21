@@ -18,7 +18,7 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios"; // Instancia de Axios configurada
 import EditProductModal from "../components/EditProductModal";

@@ -7,8 +7,8 @@ const HomePage = () => {
       justifyContent="center"
       alignItems="center"
       height="100vh"
-      bg="blue.500" // Cambia el fondo del contenedor
-      color="white" // Color del texto en blanco para mejor visibilidad
+      bg="blue.500" 
+      color="white" 
     >
       <Box
         textAlign="center"

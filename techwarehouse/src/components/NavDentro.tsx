@@ -3,7 +3,7 @@ import {
   Flex,
   HStack,
   Text,
-  Button,
+  
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";

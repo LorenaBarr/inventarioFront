@@ -8,19 +8,13 @@ import {
   Th,
   Td,
   Heading,
-  Flex,
   useToast,
 } from "@chakra-ui/react";
-import api from "../api/axios"; // Instancia de Axios configurada
+import api from "../api/axios"; 
 
 interface Inventario {
-  id: number;
-  product: {
-    nombre: string;
-  };
-  bodega: {
-    nombre: string;
-  };
+  product_nombre: string;
+  bodega_nombre: string;
   stock: number;
 }
 
@@ -29,15 +23,14 @@ const InventoryPage = () => {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
-  // Función para obtener el inventario desde el backend
+  // Función para obtener inventarios desde el backend
   const fetchInventarios = async () => {
     try {
       const response = await api.get("/inventarios/");
       setInventarios(response.data);
     } catch (error) {
-      console.log(error);
       toast({
-        title: "Error al cargar inventario",
+        title: "Error al cargar inventarios",
         description: "No se pudo cargar la lista de inventarios.",
         status: "error",
         duration: 3000,
@@ -54,14 +47,12 @@ const InventoryPage = () => {
 
   return (
     <Box p={8}>
-      <Flex justify="space-between" align="center" mb={6}>
-        <Heading as="h1" size="xl">
-          Inventario
-        </Heading>
-      </Flex>
+      <Heading as="h1" size="xl" mb={6}>
+        Inventario
+      </Heading>
 
       {loading ? (
-        <Box>Cargando inventarios...</Box>
+        <Box>Cargando inventario...</Box>
       ) : (
         <Table variant="striped" colorScheme="gray">
           <Thead>
@@ -72,10 +63,10 @@ const InventoryPage = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {inventarios.map((inventario) => (
-              <Tr key={inventario.id}>
-                <Td>{inventario.product.nombre}</Td>
-                <Td>{inventario.bodega.nombre}</Td>
+            {inventarios.map((inventario, index) => (
+              <Tr key={index}>
+                <Td>{inventario.product_nombre}</Td>
+                <Td>{inventario.bodega_nombre}</Td>
                 <Td>{inventario.stock}</Td>
               </Tr>
             ))}

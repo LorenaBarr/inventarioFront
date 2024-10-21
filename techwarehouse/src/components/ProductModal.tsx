@@ -1,4 +1,3 @@
-// src/components/ProductModal.tsx
 import {
   Modal,
   ModalOverlay,

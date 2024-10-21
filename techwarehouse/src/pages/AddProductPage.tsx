@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios"; // Instancia de Axios configurada
+import api from "../api/axios"; 
 
 const AddProductPage = () => {
   const [nombre, setNombre] = useState("");

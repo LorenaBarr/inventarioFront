@@ -1,44 +1,59 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Input,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Heading,
   FormControl,
   FormLabel,
   Select,
-  VStack,
-  Heading,
-  Text,
+  NumberInput,
+  NumberInputField,
   useToast,
 } from "@chakra-ui/react";
-import api from "../api/axios"; // Asegúrate de que este archivo esté configurado
+import api from "../api/axios"; 
 
 interface Venta {
   id: number;
-  product: string;
-  bodega: string;
+  product_nombre: string;
+  bodega_nombre: string;
   cantidad: number;
   fecha: string;
 }
 
+interface Product {
+  id: number;
+  nombre: string;
+}
+
+interface Bodega {
+  id: number;
+  nombre: string;
+}
+
 const VentaPage = () => {
   const [ventas, setVentas] = useState<Venta[]>([]);
-  const [productos, setProductos] = useState([]);
-  const [bodegas, setBodegas] = useState([]);
-  const [producto, setProducto] = useState("");
-  const [bodega, setBodega] = useState("");
-  const [cantidad, setCantidad] = useState<number>(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [bodegas, setBodegas] = useState<Bodega[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
+  const [selectedBodega, setSelectedBodega] = useState<number | null>(null);
+  const [cantidad, setCantidad] = useState<number | string>("");
   const toast = useToast();
 
-  // Obtener las ventas existentes desde el backend
+  // Función para obtener ventas desde el backend
   const fetchVentas = async () => {
     try {
       const response = await api.get("/ventas/");
       setVentas(response.data);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudieron cargar las ventas",
+        title: "Error al cargar ventas",
+        description: "No se pudo cargar la lista de ventas.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -46,17 +61,17 @@ const VentaPage = () => {
     }
   };
 
-  // Obtener los productos y bodegas disponibles
+  // Función para obtener productos y bodegas desde el backend
   const fetchProductosYBodegas = async () => {
     try {
-      const productosResponse = await api.get("/productos/");
-      const bodegasResponse = await api.get("/bodegas/");
-      setProductos(productosResponse.data);
-      setBodegas(bodegasResponse.data);
+      const productResponse = await api.get("/productos/");
+      const bodegaResponse = await api.get("/bodegas/");
+      setProducts(productResponse.data);
+      setBodegas(bodegaResponse.data);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudieron cargar los productos o bodegas",
+        title: "Error al cargar datos",
+        description: "No se pudo cargar los productos o bodegas.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -69,101 +84,144 @@ const VentaPage = () => {
     fetchProductosYBodegas();
   }, []);
 
-  // Manejar el envío del formulario para agregar una nueva venta
+  // Función para agregar una nueva venta
   const handleAddVenta = async () => {
+    if (!selectedProduct || !selectedBodega || !cantidad) {
+      toast({
+        title: "Faltan datos",
+        description:
+          "Debes seleccionar un producto, una bodega y una cantidad.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
       await api.post("/ventas/", {
-        product: producto,
-        bodega: bodega,
+        product: selectedProduct,
+        bodega: selectedBodega,
         cantidad: cantidad,
       });
       toast({
-        title: "Venta agregada",
-        description: "La venta fue registrada con éxito",
+        title: "Venta realizada",
+        description: "La venta se registró correctamente.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      fetchVentas(); // Actualizar la lista de ventas
+
+      // Actualizar la lista de ventas después de agregar
+      fetchVentas();
+      // Reiniciar formulario
+      setSelectedProduct(null);
+      setSelectedBodega(null);
+      setCantidad("");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo agregar la venta",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      // Si el error es por falta de stock disponible
+      if (error.response && error.response.data) {
+        toast({
+          title: "Error al registrar venta",
+          description: error.response.data[0], // Muestra el mensaje de error del backend
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error al registrar venta",
+          description: "No se pudo registrar la venta.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     }
   };
 
   return (
     <Box p={8}>
-      <Heading mb={6}>Ventas</Heading>
+      <Heading as="h1" size="xl" mb={6}>
+        Ventas
+      </Heading>
 
-      {/* Formulario para agregar una venta */}
-      <VStack spacing={4} align="flex-start">
-        <FormControl id="producto" isRequired>
+      {/* Formulario para agregar una nueva venta */}
+      <Box mb={8}>
+        <Heading as="h2" size="lg" mb={4}>
+          Agregar Venta
+        </Heading>
+        <FormControl mb={4}>
           <FormLabel>Producto</FormLabel>
           <Select
             placeholder="Selecciona un producto"
-            value={producto}
-            onChange={(e) => setProducto(e.target.value)}
+            value={selectedProduct ?? ""}
+            onChange={(e) => setSelectedProduct(parseInt(e.target.value))}
           >
-            {productos.map((prod: any) => (
-              <option key={prod.id} value={prod.id}>
-                {prod.nombre}
+            {products.map((product) => (
+              <option key={product.id} value={product.id}>
+                {product.nombre}
               </option>
             ))}
           </Select>
         </FormControl>
 
-        <FormControl id="bodega" isRequired>
+        <FormControl mb={4}>
           <FormLabel>Bodega</FormLabel>
           <Select
             placeholder="Selecciona una bodega"
-            value={bodega}
-            onChange={(e) => setBodega(e.target.value)}
+            value={selectedBodega ?? ""}
+            onChange={(e) => setSelectedBodega(parseInt(e.target.value))}
           >
-            {bodegas.map((bod: any) => (
-              <option key={bod.id} value={bod.id}>
-                {bod.nombre}
+            {bodegas.map((bodega) => (
+              <option key={bodega.id} value={bodega.id}>
+                {bodega.nombre}
               </option>
             ))}
           </Select>
         </FormControl>
 
-        <FormControl id="cantidad" isRequired>
+        <FormControl mb={4}>
           <FormLabel>Cantidad</FormLabel>
-          <Input
-            type="number"
+          <NumberInput
             value={cantidad}
-            onChange={(e) => setCantidad(parseInt(e.target.value))}
-            placeholder="Cantidad de productos"
-          />
+            onChange={(valueAsString, valueAsNumber) =>
+              setCantidad(valueAsNumber)
+            }
+          >
+            <NumberInputField />
+          </NumberInput>
         </FormControl>
 
         <Button colorScheme="blue" onClick={handleAddVenta}>
-          Agregar Venta
+          Registrar Venta
         </Button>
-      </VStack>
-
-      <Box mt={8}>
-        <Heading as="h2" size="lg" mb={4}>
-          Lista de Ventas
-        </Heading>
-        {ventas.length === 0 ? (
-          <Text>No hay ventas registradas.</Text>
-        ) : (
-          ventas.map((venta) => (
-            <Box key={venta.id} p={4} borderWidth={1} mb={4} borderRadius="md">
-              <Text>Producto: {venta.product}</Text>
-              <Text>Bodega: {venta.bodega}</Text>
-              <Text>Cantidad: {venta.cantidad}</Text>
-              <Text>Fecha: {new Date(venta.fecha).toLocaleString()}</Text>
-            </Box>
-          ))
-        )}
       </Box>
+
+      {/* Tabla de ventas realizadas */}
+      <Heading as="h2" size="lg" mb={4}>
+        Historial de Ventas
+      </Heading>
+      <Table variant="striped" colorScheme="gray">
+        <Thead>
+          <Tr>
+            <Th>Producto</Th>
+            <Th>Bodega</Th>
+            <Th>Cantidad</Th>
+            <Th>Fecha</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {ventas.map((venta) => (
+            <Tr key={venta.id}>
+              <Td>{venta.product_nombre}</Td>
+              <Td>{venta.bodega_nombre}</Td>
+              <Td>{venta.cantidad}</Td>
+              <Td>{new Date(venta.fecha).toLocaleString()}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
     </Box>
   );
 };

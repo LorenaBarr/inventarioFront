@@ -8,8 +8,8 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import InventoryPage from "./pages/InventoryPage";
-import ProductPage from "./pages/ProductPage"; // Importamos ProductPage
-import AddProductPage from "./pages/AddProductPage"; // Importamos AddProductPage
+import ProductPage from "./pages/ProductPage"; 
+import AddProductPage from "./pages/AddProductPage";
 import BodegaPage from "./pages/BodegaPage";
 import VentaPage from "./pages/VentaPage";
 import NotFoundPage from "./pages/NotFoundPage";

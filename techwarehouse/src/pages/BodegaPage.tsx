@@ -9,7 +9,7 @@ import {
   Tr,
   Th,
   Td,
-  Button,
+  
   Heading,
 } from "@chakra-ui/react";
 import api from "../api/axios";
@@ -45,7 +45,7 @@ const BodegaPage = () => {
             <Th>ID</Th>
             <Th>Nombre</Th>
             <Th>Ubicación</Th>
-            <Th>Acciones</Th>
+            
           </Tr>
         </Thead>
         <Tbody>
@@ -54,12 +54,7 @@ const BodegaPage = () => {
               <Td>{bodega.id}</Td>
               <Td>{bodega.nombre}</Td>
               <Td>{bodega.ubicacion}</Td>
-              <Td>
-                <Button colorScheme="blue" mr={2}>
-                  Editar
-                </Button>
-                <Button colorScheme="red">Eliminar</Button>
-              </Td>
+              
             </Tr>
           ))}
         </Tbody>

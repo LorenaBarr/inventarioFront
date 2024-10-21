@@ -1,44 +1,49 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../api/authApi";
 import {
   Box,
   Button,
   FormControl,
   FormLabel,
   Input,
-  Text,
   Heading,
-  VStack,
   useToast,
   Flex,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios"; // Instancia de Axios
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [username, setUsername] = useState(""); // Estado para almacenar el nombre de usuario
+  const [password, setPassword] = useState(""); // Estado para almacenar la contraseña
   const toast = useToast();
+  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Función para manejar el inicio de sesión
+  const handleLogin = async () => {
     try {
-      await login({ username, password });
+      const response = await api.post("/token/", {
+        username,
+        password,
+      });
+
+      const { access } = response.data;
+
+      // Almacena el token en el localStorage
+      localStorage.setItem("token", access);
+
       toast({
-        title: "Login Successful",
-        description: "You've successfully logged in.",
+        title: "Inicio de sesión exitoso",
+        description: "Has iniciado sesión correctamente.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      navigate("/inventory"); // Redirigir al inventario tras iniciar sesión
+
+      navigate("/inventory"); // Redirige al inventario después de iniciar sesión
     } catch (error) {
-        console.log(error);
-      setError("Invalid username or password");
       toast({
-        title: "Login Failed",
-        description: "Invalid username or password.",
+        title: "Error de autenticación",
+        description: "Usuario o contraseña incorrectos.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -47,38 +52,31 @@ const LoginPage = () => {
   };
 
   return (
-    <Flex minHeight="100vh" align="center" justify="center" bg="gray.100">
-      <Box bg="white" p={8} rounded="lg" shadow="lg" width="400px">
-        <VStack spacing={4} as="form" onSubmit={handleLogin}>
-          <Heading as="h2" size="lg" textAlign="center">
-            Login
-          </Heading>
-
-          <FormControl id="username" isRequired>
-            <FormLabel>Username</FormLabel>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-            />
-          </FormControl>
-
-          <FormControl id="password" isRequired>
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-            />
-          </FormControl>
-
-          {error && <Text color="red.500">{error}</Text>}
-
-          <Button type="submit" colorScheme="blue" width="full">
-            Login
-          </Button>
-        </VStack>
+    <Flex justify="center" align="center" height="100vh">
+      <Box maxWidth="400px" p={8} bg="white" borderRadius="md" shadow="md">
+        <Heading as="h2" mb={6} textAlign="center">
+          Iniciar Sesión
+        </Heading>
+        <FormControl mb={4}>
+          <FormLabel>Usuario</FormLabel>
+          <Input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)} // Actualiza el estado del nombre de usuario
+            placeholder="Ingresa tu nombre de usuario"
+          />
+        </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Contraseña</FormLabel>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} // Actualiza el estado de la contraseña
+            placeholder="Ingresa tu contraseña"
+          />
+        </FormControl>
+        <Button colorScheme="blue" onClick={handleLogin} width="full">
+          Iniciar Sesión
+        </Button>
       </Box>
     </Flex>
   );
