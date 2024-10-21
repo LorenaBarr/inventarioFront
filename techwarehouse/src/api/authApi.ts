@@ -1,4 +1,4 @@
-import api from './axios';  // Importa la configuración de Axios desde el fichero axios
+import api from './axios';  
 
 // Función para iniciar sesión
 export const login = async (credentials: { username: string; password: string }) => {

@@ -12,7 +12,7 @@ import {
   useToast,
   Flex,
 } from "@chakra-ui/react";
-import { register } from "../api/authApi"; //  función de registro
+import { register } from "../api/authApi"; 
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
@@ -26,6 +26,9 @@ const RegisterPage = () => {
     e.preventDefault();
 
     try {
+      // Imprimir datos antes de llamar a la API para debug
+      console.log("Datos enviados:", { username, email, password });
+
       await register({ username, email, password }); // Llamada a la función de registro
       toast({
         title: "Cuenta creada",
